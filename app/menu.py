@@ -126,10 +126,8 @@ def show_main_menu():
 
         if resource == "Itens":
             handle_menu(show_items_menu)
-            pass
         elif resource == "Categorias":
             handle_menu(show_categories_menu)
-            pass
         elif resource == "Movimentações":
             handle_menu(show_movements_menu)
         elif resource == "Sair":

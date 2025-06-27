@@ -1,6 +1,12 @@
 import inquirer
 from app import service
 
+def handle_menu(menu_function):
+    """funcao que lida com os menus"""
+    should_continue = True
+    while should_continue:
+        should_continue = menu_function()
+
 
 def show_items_menu():
     questions = [

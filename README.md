@@ -23,16 +23,15 @@ Este projeto tem como objetivo fornecer uma solução simples e funcional para o
 
 ### 📁 Estrutura do Projeto
 
-    seu_projeto/
-    ├── app/
-    │   ├── __init__.py
-    │   ├── menu.py
-    │   ├── actions.py
-    │   └── storage.py
-    │
-    ├── data/
-    │   └── items.json
-    │
-    ├── main.py
-    ├── requirements.txt
-    └── README.md
+    sig_pantry/
+├── app/
+│   ├── menu.py
+│   └── service/
+│       ├── __init__.py
+│       ├── categories.py
+│       ├── items.py
+│       ├── movements.py
+├── .gitignore
+├── main.py
+└── README.md
+

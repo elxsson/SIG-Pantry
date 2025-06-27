@@ -70,6 +70,34 @@ def show_categories_menu():
     return True
 
 
+def show_movements_menu():
+    questions = [
+        inquirer.List(
+            "option",
+            message="Menu Movimentações - Selecione uma ação:",
+            choices=[
+                "Registrar movimentação",
+                "Ver histórico de movimentações",
+                "Voltar"
+            ],
+        )
+    ]
+    answer = inquirer.prompt(questions)
+    if not answer:
+        return False
+    
+    option = answer["option"]
+
+    if option == "Registrar movimentação":
+        service.register_movement()
+    elif option == "Ver histórico de movimentações":
+        service.view_movement_history()
+    elif option == "Voltar":
+        return False
+
+    return True
+
+
 def show_main_menu():
     running = True
 

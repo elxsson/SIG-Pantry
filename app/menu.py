@@ -125,14 +125,13 @@ def show_main_menu():
         resource = answer["resource"]
 
         if resource == "Itens":
-            # handle_menu(show_items_menu)
+            handle_menu(show_items_menu)
             pass
         elif resource == "Categorias":
-            # handle_menu(show_categories_menu)
+            handle_menu(show_categories_menu)
             pass
         elif resource == "Movimentações":
-            # handle_menu(show_movements_menu)
-            pass
+            handle_menu(show_movements_menu)
         elif resource == "Sair":
             print("Encerrando o sistema...")
             running = False

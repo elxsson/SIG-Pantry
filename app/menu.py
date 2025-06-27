@@ -45,6 +45,31 @@ def show_items_menu():
     return True
 
 
+def show_categories_menu():
+    questions = [
+        inquirer.List(
+            "option",
+            message="Menu Categorias - Selecione uma ação:",
+            choices=[
+                "Gerenciar categorias",
+                "Voltar"
+            ],
+        )
+    ]
+    answer = inquirer.prompt(questions)
+    if not answer:
+        return False
+
+    option = answer["option"]
+
+    if option == "Gerenciar categorias":
+        service.manage_categories()
+    elif option == "Voltar":
+        return False
+
+    return True
+
+
 def show_main_menu():
     running = True
 

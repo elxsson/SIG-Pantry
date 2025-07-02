@@ -12,7 +12,6 @@ def ensure_data_dir():
 
 
 def load_data(filename, default=None):
-    """Carrega dados de um arquivo JSON"""
     if default is None:
         default = []
     
@@ -24,3 +23,13 @@ def load_data(filename, default=None):
     except (json.JSONDecodeError, IOError):
         return default
 
+
+def save_data(filename, data):
+    ensure_data_dir()
+    try:
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        return True
+    except IOError:
+        return False
+    

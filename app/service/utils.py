@@ -32,4 +32,11 @@ def save_data(filename, data):
         return True
     except IOError:
         return False
-    
+
+
+def get_next_id(items):
+    if not items:
+        return 1
+    return max(item.get('id', 0) for item in items) + 1
+
+

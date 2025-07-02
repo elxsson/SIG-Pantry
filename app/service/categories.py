@@ -56,3 +56,82 @@ def list_categories():
     headers = ['ID', 'Nome', 'Qtd Itens', 'Criada em']
     print(tabulate(table_data, headers=headers, tablefmt='grid'))
 
+
+def add_category():
+    print("\n=== Adicionar Nova Categoria ===")
+    
+    name = input("Nome da categoria: ").strip()
+    
+    if not name:
+        print("❌ Nome da categoria não pode estar vazio!")
+        return
+    
+    categories = load_categories_data()
+    
+    # Verifica se já existe:
+    if any(cat['name'].lower() == name.lower() and cat.get('active', True) for cat in categories):
+        print(f"❌ Categoria '{name}' já existe!")
+        return
+    
+    new_category = {
+        'id': get_next_id(categories),
+        'name': name,
+        'active': True,
+        'created_at': datetime.now().isoformat()
+    }
+    
+    categories.append(new_category)
+    save_data(CATEGORIES_FILE, categories)
+    
+    log_operation(f"NOVA CATEGORIA CRIADA:\n{json.dumps(new_category, indent=2, ensure_ascii=False)}")
+    
+    print(f"✅ Categoria '{name}' criada com sucesso!")
+
+
+def edit_category():
+    categories = load_categories_data()
+    active_categories = [cat for cat in categories if cat.get('active', True)]
+    
+    if not active_categories:
+        print("❌ Nenhuma categoria encontrada!")
+        return
+    
+    print("\n=== Editar Categoria ===")
+    
+    # seleciona categoria
+    cat_choices = [f"{cat['id']} - {cat['name']}" for cat in active_categories]
+    
+    questions = [
+        inquirer.List('category', message="Selecione a categoria para editar", choices=cat_choices)
+    ]
+    
+    answer = inquirer.prompt(questions)
+    if not answer:
+        return
+    
+    cat_id = int(answer['category'].split(' - ')[0])
+    category_to_edit = next((cat for cat in categories if cat['id'] == cat_id), None)
+    
+    if not category_to_edit:
+        print("❌ Categoria não encontrada!")
+        return
+    
+    print(f"Nome atual: {category_to_edit['name']}")
+    new_name = input("Novo nome (Enter para manter o atual): ").strip()
+    
+    if new_name and new_name != category_to_edit['name']:
+        # verifica se ja existe
+        if any(cat['name'].lower() == new_name.lower() and cat.get('active', True) and cat['id'] != cat_id for cat in categories):
+            print(f"❌ Categoria '{new_name}' já existe!")
+            return
+        
+        category_to_edit['name'] = new_name
+        category_to_edit['updated_at'] = datetime.now().isoformat()
+        
+        save_data(CATEGORIES_FILE, categories)
+        log_operation(f"CATEGORIA EDITADA:\n{json.dumps(category_to_edit, indent=2, ensure_ascii=False)}")
+        
+        print(f"✅ Categoria atualizada para '{new_name}'!")
+    else:
+        print("ℹ️ Nenhuma alteração feita.")
+

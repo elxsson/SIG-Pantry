@@ -7,7 +7,10 @@ from .items import (
 )
 
 from .categories import (
-    manage_categories,
+    list_categories,
+    add_category,
+    edit_category,
+    remove_category,
 )
 
 from .movements import (

@@ -135,3 +135,41 @@ def edit_category():
     else:
         print("ℹ️ Nenhuma alteração feita.")
 
+
+def remove_category():
+    categories = load_categories_data()
+    active_categories = [cat for cat in categories if cat.get('active', True)]
+    
+    if not active_categories:
+        print("❌ Nenhuma categoria encontrada!")
+        return
+    
+    print("\n=== Remover Categoria ===")
+    
+    # seleciona categoria:
+    cat_choices = [f"{cat['id']} - {cat['name']}" for cat in active_categories]
+    
+    questions = [
+        inquirer.List('category', message="Selecione a categoria para remover", choices=cat_choices),
+        inquirer.Confirm('confirm', message="⚠️ ATENÇÃO: Todos os itens desta categoria ficarão órfãos. Continuar?")
+    ]
+    
+    answers = inquirer.prompt(questions)
+    if not answers or not answers['confirm']:
+        return
+    
+    cat_id = int(answers['category'].split(' - ')[0])
+    
+    # solução do stackoverflow:
+    for cat in categories:
+        if cat['id'] == cat_id:
+            cat['active'] = False
+            cat['deleted_at'] = datetime.now().isoformat()
+            
+            save_data(CATEGORIES_FILE, categories)
+            log_operation(f"CATEGORIA REMOVIDA:\n{json.dumps(cat, indent=2, ensure_ascii=False)}")
+            
+            print(f"✅ Categoria '{cat['name']}' removida com sucesso!")
+            return
+    
+    print("❌ Categoria não encontrada!")

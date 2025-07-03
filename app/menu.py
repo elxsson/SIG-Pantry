@@ -47,23 +47,37 @@ def show_items_menu():
 
 def show_categories_menu():
     questions = [
-        inquirer.List(
-            "option",
-            message="Menu Categorias - Selecione uma ação:",
-            choices=[
-                "Gerenciar categorias",
-                "Voltar"
-            ],
-        )
-    ]
+            inquirer.List(
+                "option",
+                message="Selecione uma ação:",
+                choices=[
+                    "Listar categorias",
+                    "Adicionar categoria",
+                    "Editar categoria",
+                    "Remover categoria",
+                    "Voltar"
+                ]
+            )
+        ]
+        
     answer = inquirer.prompt(questions)
     if not answer:
         return False
-
+    
     option = answer["option"]
-
-    if option == "Gerenciar categorias":
-        service.manage_categories()
+    
+    if option == "Listar categorias":
+        service.list_categories()
+        pass
+    elif option == "Adicionar categoria":
+        service.add_category()
+        pass
+    elif option == "Editar categoria":
+        service.edit_category()
+        pass
+    elif option == "Remover categoria":
+        service.remove_category()
+        pass
     elif option == "Voltar":
         return False
 

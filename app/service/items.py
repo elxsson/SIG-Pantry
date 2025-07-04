@@ -121,3 +121,40 @@ def add_item():
     
     print(f"✅ Item '{new_item['nome']}' adicionado com sucesso!")
 
+
+def remove_item():
+    items = load_data(ITEMS_FILE, [])
+    active_items = [item for item in items if item.get('active', True)]
+    
+    if not active_items:
+        print("❌ Nenhum item encontrado!")
+        return
+    
+    print("\n=== Remover Item ===")
+    
+    item_choices = [f"{item['id']} - {item['nome']}" for item in active_items]
+    
+    questions = [
+        inquirer.List('item', message="Selecione o item para remover", choices=item_choices),
+        inquirer.Confirm('confirm', message="Tem certeza que deseja remover este item?")
+    ]
+    
+    answers = inquirer.prompt(questions)
+    if not answers or not answers['confirm']:
+        return
+    
+    item_id = int(answers['item'].split(' - ')[0])
+    
+    # encontra e marca como inativo
+    for item in items:
+        if item['id'] == item_id:
+            item['active'] = False
+            item['deleted_at'] = datetime.now().isoformat()
+            
+            save_data(ITEMS_FILE, items)
+            log_operation(f"ITEM REMOVIDO:\n{json.dumps(item, indent=2, ensure_ascii=False)}")
+            
+            print(f"✅ Item '{item['nome']}' removido com sucesso!")
+            return
+    
+    print("❌ Item não encontrado!")

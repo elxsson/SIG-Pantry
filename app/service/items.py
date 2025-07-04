@@ -240,3 +240,87 @@ def update_item():
     log_operation(f"ITEM ATUALIZADO:\n{json.dumps(item_to_update, indent=2, ensure_ascii=False)}")
     
     print(f"✅ Item '{item_to_update['nome']}' atualizado com sucesso!")
+
+
+def list_items():
+    items = load_data(ITEMS_FILE, [])
+    active_items = [item for item in items if item.get('active', True)]
+    
+    if not active_items:
+        print("❌ Nenhum item encontrado!")
+        return
+    
+    # verifica alertas de validade
+    check_expiry_alerts(active_items)
+    
+    categories = load_categories()
+    cat_dict = {cat['id']: cat['name'] for cat in categories}
+    
+    print(f"\n=== Lista de Itens ({len(active_items)} itens) ===")
+    
+    # prepara dados para tabela
+    table_data = []
+    for item in active_items:
+        categoria_nome = cat_dict.get(item['categoria_id'], 'Categoria não encontrada')
+        
+        # verifica se ta no estoque min
+        status = "🔴 Estoque baixo" if item['quantidade'] <= item['estoque_minimo'] else "🟢 OK"
+        
+        table_data.append([
+            item['id'],
+            item['nome'],
+            categoria_nome,
+            item['quantidade'],
+            item['unidade_medida'],
+            item['validade'],
+            item['estoque_minimo'],
+            status
+        ])
+    
+    headers = ['ID', 'Nome', 'Categoria', 'Qtd', 'Unidade', 'Validade', 'Est. Mín', 'Status']
+    print(tabulate(table_data, headers=headers, tablefmt='grid'))
+
+
+def search_item():
+    items = load_data(ITEMS_FILE, [])
+    active_items = [item for item in items if item.get('active', True)]
+    
+    if not active_items:
+        print("❌ Nenhum item encontrado!")
+        return
+    
+    search_term = input("\n🔍 Digite o nome do item para buscar: ").lower().strip()
+    
+    if not search_term:
+        print("❌ Termo de busca não pode estar vazio!")
+        return
+    
+    # busca itens
+    found_items = [item for item in active_items if search_term in item['nome'].lower()]
+    
+    if not found_items:
+        print(f"❌ Nenhum item encontrado com o termo '{search_term}'")
+        return
+    
+    categories = load_categories()
+    cat_dict = {cat['id']: cat['name'] for cat in categories}
+    
+    print(f"\n=== Resultados da busca por '{search_term}' ({len(found_items)} encontrado(s)) ===")
+    
+    # preapra dados para tabela
+    table_data = []
+    for item in found_items:
+        categoria_nome = cat_dict.get(item['categoria_id'], 'Categoria não encontrada')
+        
+        table_data.append([
+            item['id'],
+            item['nome'],
+            categoria_nome,
+            item['quantidade'],
+            item['unidade_medida'],
+            item['validade'],
+            item['estoque_minimo']
+        ])
+    
+    headers = ['ID', 'Nome', 'Categoria', 'Qtd', 'Unidade', 'Validade', 'Est. Mín']
+    print(tabulate(table_data, headers=headers, tablefmt='grid'))

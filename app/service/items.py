@@ -158,3 +158,85 @@ def remove_item():
             return
     
     print("❌ Item não encontrado!")
+
+def update_item():
+    items = load_data(ITEMS_FILE, [])
+    active_items = [item for item in items if item.get('active', True)]
+    
+    if not active_items:
+        print("❌ Nenhum item encontrado!")
+        return
+    
+    categories = load_categories()
+    
+    print("\n=== Atualizar Item ===")
+    
+    item_choices = [f"{item['id']} - {item['nome']}" for item in active_items]
+    
+    item_question = inquirer.List('item', message="Selecione o item para atualizar", choices=item_choices)
+    item_answer = inquirer.prompt([item_question])
+    
+    if not item_answer:
+        return
+    
+    item_id = int(item_answer['item'].split(' - ')[0])
+
+    # soluçao do stackoverflow
+    item_to_update = next((item for item in items if item['id'] == item_id), None)
+    
+    if not item_to_update:
+        print("❌ Item não encontrado!")
+        return
+    
+    print(f"\nDados atuais do item '{item_to_update['nome']}':")
+    current_data = [[
+        item_to_update['nome'],
+        item_to_update['quantidade'],
+        item_to_update['unidade_medida'],
+        item_to_update['validade'],
+        item_to_update['estoque_minimo']
+    ]]
+    print(tabulate(current_data, headers=['Nome', 'Quantidade', 'Unidade', 'Validade', 'Est. Mín'], tablefmt='grid'))
+    
+    # perguntas de atualização
+    cat_choices = [f"{cat['id']} - {cat['name']}" for cat in categories]
+    current_cat = next((cat for cat in categories if cat['id'] == item_to_update['categoria_id']), None)
+    current_cat_choice = f"{current_cat['id']} - {current_cat['name']}" if current_cat else cat_choices[0]
+    
+    questions = [
+        inquirer.Text('nome', message="Nome do item", default=item_to_update['nome']),
+        inquirer.List('categoria', message="Categoria", choices=cat_choices, default=current_cat_choice),
+        inquirer.Text('quantidade', message="Quantidade", default=str(item_to_update['quantidade']), validate=lambda _, x: x.isdigit()),
+        inquirer.Text('unidade_medida', message="Unidade de medida", default=item_to_update['unidade_medida']),
+        inquirer.Text('validade', message="Data de validade (YYYY-MM-DD)", default=item_to_update['validade']),
+        inquirer.Text('estoque_minimo', message="Estoque mínimo", default=str(item_to_update['estoque_minimo']), validate=lambda _, x: x.isdigit()),
+    ]
+    
+    answers = inquirer.prompt(questions)
+    if not answers:
+        return
+    
+    # valida a data
+    try:
+        datetime.strptime(answers['validade'], '%Y-%m-%d')
+    except ValueError:
+        print("❌ Data inválida! Use o formato YYYY-MM-DD")
+        return
+    
+    categoria_id = int(answers['categoria'].split(' - ')[0])
+    
+    # atualiza o item 
+    item_to_update.update({
+        'nome': answers['nome'],
+        'categoria_id': categoria_id,
+        'quantidade': int(answers['quantidade']),
+        'unidade_medida': answers['unidade_medida'],
+        'validade': answers['validade'],
+        'estoque_minimo': int(answers['estoque_minimo']),
+        'updated_at': datetime.now().isoformat()
+    })
+    
+    save_data(ITEMS_FILE, items)
+    log_operation(f"ITEM ATUALIZADO:\n{json.dumps(item_to_update, indent=2, ensure_ascii=False)}")
+    
+    print(f"✅ Item '{item_to_update['nome']}' atualizado com sucesso!")

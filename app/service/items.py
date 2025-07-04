@@ -14,7 +14,6 @@ def load_categories():
     #retorna somente as categorias ativas
     return [cat for cat in categories if cat.get('active', True)]
 
-
 	
 def check_expiry_alerts(items):
     today = datetime.now().date()
@@ -64,4 +63,61 @@ def check_expiry_alerts(items):
             print(tabulate(soon_data, headers=['Produto', 'Validade', 'Vence em'], tablefmt='grid'))
         
         print("=" * 50)
+
+
+def add_item():
+    ensure_data_dir()
+    
+    categories = load_categories()
+    if not categories:
+        print("❌ Nenhuma categoria ativa encontrada! Crie uma categoria primeiro.")
+        return
+    
+    print("\n=== Adicionar Novo Item ===")
+    
+    # mostra categorias disponíveis
+    cat_choices = [f"{cat['id']} - {cat['name']}" for cat in categories]
+    
+    questions = [
+        inquirer.Text('nome', message="Nome do item"),
+        inquirer.List('categoria', message="Categoria", choices=cat_choices),
+        inquirer.Text('quantidade', message="Quantidade", validate=lambda _, x: x.isdigit()),
+        inquirer.Text('unidade_medida', message="Unidade de medida (ex: unidade, kg, litro)"),
+        inquirer.Text('validade', message="Data de validade (YYYY-MM-DD)"),
+        inquirer.Text('estoque_minimo', message="Estoque mínimo", validate=lambda _, x: x.isdigit()),
+    ]
+    
+    answers = inquirer.prompt(questions)
+    if not answers:
+        return
+    
+    # valida a data
+    try:
+        datetime.strptime(answers['validade'], '%Y-%m-%d')
+    except ValueError:
+        print("❌ Data inválida! Use o formato YYYY-MM-DD")
+        return
+    
+    categoria_id = int(answers['categoria'].split(' - ')[0])
+    
+    items = load_data(ITEMS_FILE, [])
+    
+    new_item = {
+        'id': get_next_id(items),
+        'nome': answers['nome'],
+        'categoria_id': categoria_id,
+        'quantidade': int(answers['quantidade']),
+        'unidade_medida': answers['unidade_medida'],
+        'validade': answers['validade'],
+        'estoque_minimo': int(answers['estoque_minimo']),
+        'active': True,
+        'created_at': datetime.now().isoformat()
+    }
+    
+    items.append(new_item)
+    save_data(ITEMS_FILE, items)
+    
+    log_operation(f"NOVO ITEM ADICIONADO:\n{json.dumps(new_item, indent=2, ensure_ascii=False)}")
+    
+    print(f"✅ Item '{new_item['nome']}' adicionado com sucesso!")
 

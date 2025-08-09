@@ -1,3 +1,5 @@
+import os
+import time
 import inquirer
 from app import service
 
@@ -6,6 +8,12 @@ def handle_menu(menu_function):
     should_continue = True
     while should_continue:
         should_continue = menu_function()
+
+
+def clear_screen(delay=0):
+    if delay > 0:
+        time.sleep(delay)
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 def show_items_menu():

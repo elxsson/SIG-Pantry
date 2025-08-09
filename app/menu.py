@@ -39,10 +39,13 @@ def show_items_menu():
 
     if option == "Adicionar item":
         service.add_item()
+        clear_screen(2)
     elif option == "Remover item":
         service.remove_item()
+        clear_screen(2)
     elif option == "Atualizar item":
         service.update_item()
+        clear_screen(2)
     elif option == "Listar itens":
         service.list_items()
     elif option == "Buscar item por nome":
@@ -55,18 +58,18 @@ def show_items_menu():
 
 def show_categories_menu():
     questions = [
-            inquirer.List(
-                "option",
-                message="Selecione uma ação:",
-                choices=[
-                    "Listar categorias",
-                    "Adicionar categoria",
-                    "Editar categoria",
-                    "Remover categoria",
-                    "Voltar"
-                ]
-            )
-        ]
+        inquirer.List(
+            "option",
+            message="Selecione uma ação:",
+            choices=[
+                "Listar categorias",
+                "Adicionar categoria",
+                "Editar categoria",
+                "Remover categoria",
+                "Voltar"
+            ]
+        )
+    ]
         
     answer = inquirer.prompt(questions)
     if not answer:
@@ -76,16 +79,15 @@ def show_categories_menu():
     
     if option == "Listar categorias":
         service.list_categories()
-        pass
     elif option == "Adicionar categoria":
         service.add_category()
-        pass
+        clear_screen(2)
     elif option == "Editar categoria":
         service.edit_category()
-        pass
+        clear_screen(2)
     elif option == "Remover categoria":
         service.remove_category()
-        pass
+        clear_screen(2)
     elif option == "Voltar":
         return False
 
@@ -112,6 +114,7 @@ def show_movements_menu():
 
     if option == "Registrar movimentação":
         service.register_movement()
+        clear_screen(2)
     elif option == "Ver histórico de movimentações":
         service.view_movement_history()
     elif option == "Voltar":

@@ -2,17 +2,16 @@
 
 ### Sistema de Controle de Despensa Doméstica
 
-Este projeto tem como objetivo fornecer uma solução simples e funcional para o controle de itens em uma despensa doméstica. Desenvolvido em Python com abordagem estruturada.
+Este projeto tem como objetivo fornecer uma solução simples e funcional para o controle de itens em uma despensa doméstica. Desenvolvido em Python com abordagem modular.
 
 ### Funcionalidades
 
 - Adicionar itens à despensa  
-- Remover itens (uso ou descarte)  
+- Remover itens 
 - Atualizar quantidades dos itens  
 - Listar todos os itens cadastrados  
 - Buscar itens por nome  
 - Alertas de validade ou estoque baixo  
-- Login de usuários
 
 
 ### 📁 Estrutura do Projeto
@@ -25,8 +24,10 @@ Este projeto tem como objetivo fornecer uma solução simples e funcional para o
     │       ├── categories.py
     │       ├── items.py
     │       ├── movements.py
+    │       └── utils.py
     ├── .gitignore
     ├── main.py
+    ├── requirements.txt
     └── README.md
 
 ### Requisitos
